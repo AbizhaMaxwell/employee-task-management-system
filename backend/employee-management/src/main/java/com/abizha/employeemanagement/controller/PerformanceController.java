@@ -7,6 +7,7 @@ import com.abizha.employeemanagement.repository.TaskRepository;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/performance")
 public class PerformanceController {
 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Employee Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <h1>Employee Management System</h1>
+
+        <p>Login to continue</p>
+
+        <div class="progress-box">
+
+            <h2>Login</h2>
+
+            <form id="loginForm">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter username"
+                    required
+                >
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+
+                <button type="submit">
+                    Login
+                </button>
+
+                <p id="loginMessage"></p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+    document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const username =
+                document.getElementById("username").value;
+
+            const password =
+                document.getElementById("password").value;
+
+            try {
+
+                const response =
+                    await fetch(
+                        "http://localhost:8080/api/users/login",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                username: username,
+                                password: password
+                            })
+                        }
+                    );
+
+                if (!response.ok) {
+
+                    document.getElementById(
+                        "loginMessage"
+                    ).textContent =
+                        "Invalid username or password.";
+
+                    return;
+                }
+
+                const user =
+                    await response.json();
+
+
+                // Save logged-in user details
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(user)
+                );
+
+
+                // Redirect based on role
+
+                if (user.role === "ADMIN") {
+
+                    window.location.href = "admin.html";
+
+                }
+                else if (user.role === "EMPLOYEE") {
+
+                    window.location.href = "employee.html";
+
+                }
+                else {
+
+                    document.getElementById(
+                        "loginMessage"
+                    ).textContent =
+                        "Invalid user role.";
+
+                }
+
+            }
+            catch (error) {
+
+                document.getElementById(
+                    "loginMessage"
+                ).textContent =
+                    "Unable to connect to server.";
+
+            }
+
+        });
+
+</script>
+
+</body>
+
+</html>

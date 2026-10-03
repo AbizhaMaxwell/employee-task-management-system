@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>Admin Dashboard</h1>
+
+    <button onclick="logout()">
+        Logout
+    </button>
+
+    <p id="welcomeMessage">
+        Welcome, Admin
+    </p>
+
+    <p>
+        Employee Task & Performance Management
+    </p>
+
+
+    <!-- ============================== -->
+    <!-- DASHBOARD SUMMARY -->
+    <!-- ============================== -->
+
+    <div class="cards">
+
+        <div class="card">
+
+            <h3>
+                Total Employees
+            </h3>
+
+            <p id="totalEmployees">
+                0
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Total Tasks
+            </h3>
+
+            <p id="totalTasks">
+                0
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Completed Tasks
+            </h3>
+
+            <p id="completedTasks">
+                0
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Pending Tasks
+            </h3>
+
+            <p id="pendingTasks">
+                0
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================== -->
+    <!-- OVERALL PERFORMANCE -->
+    <!-- ============================== -->
+
+    <div class="progress-box">
+
+        <h2>
+            Overall Completion
+        </h2>
+
+        <p id="completionPercentage">
+            0%
+        </p>
+
+    </div>
+
+
+    <!-- ============================== -->
+    <!-- ADD EMPLOYEE -->
+    <!-- ============================== -->
+
+    <div class="progress-box">
+
+        <h2>
+            Add Employee
+        </h2>
+
+
+        <form id="employeeForm">
+
+            <label for="employeeName">
+                Employee Name
+            </label>
+
+            <input
+                type="text"
+                id="employeeName"
+                placeholder="Enter employee name"
+                required
+            >
+
+
+            <label for="employeeEmail">
+                Employee Email
+            </label>
+
+            <input
+                type="email"
+                id="employeeEmail"
+                placeholder="Enter employee email"
+                required
+            >
+
+
+            <label for="employeeDepartment">
+                Department
+            </label>
+
+            <input
+                type="text"
+                id="employeeDepartment"
+                placeholder="Enter department"
+                required
+            >
+
+
+            <label for="employeeDesignation">
+                Designation
+            </label>
+
+            <input
+                type="text"
+                id="employeeDesignation"
+                placeholder="Enter designation"
+                required
+            >
+
+
+            <button type="submit">
+                Add Employee
+            </button>
+
+
+            <p id="employeeMessage"></p>
+
+        </form>
+
+    </div>
+
+
+    <!-- ============================== -->
+    <!-- EMPLOYEE LIST -->
+    <!-- ============================== -->
+
+    <div class="progress-box">
+
+        <h2>
+            Employees
+        </h2>
+
+        <div id="employeeList">
+            Loading employees...
+        </div>
+
+    </div>
+
+
+    <!-- ============================== -->
+    <!-- TASK MANAGEMENT -->
+    <!-- ============================== -->
+
+    <div class="progress-box">
+
+        <h2>
+            Task Management
+        </h2>
+
+
+        <form id="taskForm">
+
+            <label for="taskTitle">
+                Task Title
+            </label>
+
+            <input
+                type="text"
+                id="taskTitle"
+                placeholder="Enter task title"
+                required
+            >
+
+
+            <label for="taskDescription">
+                Description
+            </label>
+
+            <input
+                type="text"
+                id="taskDescription"
+                placeholder="Enter task description"
+                required
+            >
+
+
+            <label for="taskPriority">
+                Priority
+            </label>
+
+            <select
+                id="taskPriority"
+                required
+            >
+
+                <option value="">
+                    Select Priority
+                </option>
+
+                <option value="Low">
+                    Low
+                </option>
+
+                <option value="Medium">
+                    Medium
+                </option>
+
+                <option value="High">
+                    High
+                </option>
+
+            </select>
+
+
+            <label for="taskDeadline">
+                Deadline
+            </label>
+
+            <input
+                type="date"
+                id="taskDeadline"
+                required
+            >
+
+
+            <label for="taskEmployeeId">
+                Assign Employee
+            </label>
+
+
+            <select
+                id="taskEmployeeId"
+                required
+            >
+
+                <option value="">
+                    Select Employee
+                </option>
+
+            </select>
+
+
+            <button type="submit">
+                Assign Task
+            </button>
+
+
+            <p id="taskMessage"></p>
+
+        </form>
+
+    </div>
+
+
+    <!-- ============================== -->
+    <!-- ASSIGNED TASKS -->
+    <!-- ============================== -->
+
+    <div class="progress-box">
+
+        <h2>
+            Assigned Tasks
+        </h2>
+
+        <div id="taskList">
+            Loading tasks...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+    // ==============================
+    // ADMIN SESSION
+    // ==============================
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("user")
+        );
+
+
+    // ==============================
+    // SESSION PROTECTION
+    // ==============================
+
+    if (!user) {
+
+        window.location.href =
+            "index.html";
+
+    }
+
+
+    // ==============================
+    // CHECK ADMIN ROLE
+    // ==============================
+
+    if (user.role !== "ADMIN") {
+
+        window.location.href =
+            "index.html";
+
+    }
+
+
+    // ==============================
+    // DISPLAY ADMIN USERNAME
+    // ==============================
+
+    document.getElementById(
+        "welcomeMessage"
+    ).textContent =
+        "Welcome, " + user.username;
+
+
+    // ==============================
+    // LOAD DASHBOARD
+    // ==============================
+
+    async function loadDashboard() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://localhost:8080/api/dashboard"
+                );
+
+
+            const data =
+                await response.json();
+
+
+            document.getElementById(
+                "totalEmployees"
+            ).textContent =
+                data.totalEmployees;
+
+
+            document.getElementById(
+                "totalTasks"
+            ).textContent =
+                data.totalTasks;
+
+
+            document.getElementById(
+                "completedTasks"
+            ).textContent =
+                data.completedTasks;
+
+
+            document.getElementById(
+                "pendingTasks"
+            ).textContent =
+                data.pendingTasks;
+
+
+            document.getElementById(
+                "completionPercentage"
+            ).textContent =
+                data.completionPercentage +
+                "%";
+
+
+        }
+        catch (error) {
+
+            console.log(
+                "Unable to load dashboard"
+            );
+
+        }
+
+    }
+
+
+    // ==============================
+    // LOAD EMPLOYEES
+    // ==============================
+
+    async function loadEmployees() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://localhost:8080/api/employees"
+                );
+
+
+            const employees =
+                await response.json();
+
+
+            loadEmployeeDropdown(
+                employees
+            );
+
+
+            const employeeList =
+                document.getElementById(
+                    "employeeList"
+                );
+
+
+            employeeList.innerHTML = "";
+
+
+            if (employees.length === 0) {
+
+                employeeList.innerHTML =
+                    "<p>No employees found.</p>";
+
+                return;
+
+            }
+
+
+            employees.forEach(
+                employee => {
+
+                    const employeeCard =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    employeeCard.className =
+                        "card";
+
+
+                    employeeCard.style.marginTop =
+                        "15px";
+
+
+                    employeeCard.innerHTML = `
+
+                        <h3>
+                            ${employee.name}
+                        </h3>
+
+                        <p>
+                            <strong>Email:</strong>
+                            ${employee.email}
+                        </p>
+
+                        <p>
+                            <strong>Department:</strong>
+                            ${employee.department}
+                        </p>
+
+                        <p>
+                            <strong>Designation:</strong>
+                            ${employee.designation}
+                        </p>
+
+                        <button
+                            onclick="deleteEmployee(${employee.id})"
+                        >
+                            Delete
+                        </button>
+
+                    `;
+
+
+                    employeeList.appendChild(
+                        employeeCard
+                    );
+
+                }
+            );
+
+
+        }
+        catch (error) {
+
+            console.log(
+                "Unable to load employees"
+            );
+
+        }
+
+    }
+
+
+    // ==============================
+    // EMPLOYEE DROPDOWN
+    // ==============================
+
+    function loadEmployeeDropdown(
+        employees
+    ) {
+
+        const dropdown =
+            document.getElementById(
+                "taskEmployeeId"
+            );
+
+
+        dropdown.innerHTML =
+            '<option value="">Select Employee</option>';
+
+
+        employees.forEach(
+            employee => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    employee.id;
+
+
+                option.textContent =
+                    employee.name;
+
+
+                dropdown.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
+
+
+    // ==============================
+    // ADD EMPLOYEE
+    // ==============================
+
+    document
+        .getElementById("employeeForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const employee = {
+
+                    name:
+                        document.getElementById(
+                            "employeeName"
+                        ).value,
+
+
+                    email:
+                        document.getElementById(
+                            "employeeEmail"
+                        ).value,
+
+
+                    department:
+                        document.getElementById(
+                            "employeeDepartment"
+                        ).value,
+
+
+                    designation:
+                        document.getElementById(
+                            "employeeDesignation"
+                        ).value
+
+                };
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "http://localhost:8080/api/employees",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        employee
+                                    )
+
+                            }
+                        );
+
+
+                    if (response.ok) {
+
+                        document.getElementById(
+                            "employeeMessage"
+                        ).textContent =
+                            "Employee added successfully!";
+
+
+                        document.getElementById(
+                            "employeeForm"
+                        ).reset();
+
+
+                        loadEmployees();
+
+                        loadDashboard();
+
+
+                    }
+                    else {
+
+                        document.getElementById(
+                            "employeeMessage"
+                        ).textContent =
+                            "Failed to add employee.";
+
+                    }
+
+                }
+                catch (error) {
+
+                    document.getElementById(
+                        "employeeMessage"
+                    ).textContent =
+                        "Unable to connect to server.";
+
+                }
+
+            }
+        );
+
+
+    // ==============================
+    // DELETE EMPLOYEE
+    // ==============================
+
+    async function deleteEmployee(id) {
+
+        const confirmDelete =
+            confirm(
+                "Are you sure you want to delete this employee?"
+            );
+
+
+        if (!confirmDelete) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://localhost:8080/api/employees/" +
+                    id,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+
+            if (response.ok) {
+
+                loadEmployees();
+
+                loadDashboard();
+
+            }
+
+        }
+        catch (error) {
+
+            console.log(
+                "Unable to delete employee"
+            );
+
+        }
+
+    }
+
+
+    // ==============================
+    // ADD TASK
+    // ==============================
+
+    document
+        .getElementById("taskForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const task = {
+
+                    title:
+                        document.getElementById(
+                            "taskTitle"
+                        ).value,
+
+
+                    description:
+                        document.getElementById(
+                            "taskDescription"
+                        ).value,
+
+
+                    priority:
+                        document.getElementById(
+                            "taskPriority"
+                        ).value,
+
+
+                    status:
+                        "Pending",
+
+
+                    deadline:
+                        document.getElementById(
+                            "taskDeadline"
+                        ).value,
+
+
+                    employeeId:
+                        Number(
+                            document.getElementById(
+                                "taskEmployeeId"
+                            ).value
+                        )
+
+                };
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "http://localhost:8080/api/tasks",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        task
+                                    )
+
+                            }
+                        );
+
+
+                    if (response.ok) {
+
+                        document.getElementById(
+                            "taskMessage"
+                        ).textContent =
+                            "Task assigned successfully!";
+
+
+                        document.getElementById(
+                            "taskForm"
+                        ).reset();
+
+
+                        loadDashboard();
+
+                        loadTasks();
+
+                    }
+                    else {
+
+                        document.getElementById(
+                            "taskMessage"
+                        ).textContent =
+                            "Failed to assign task.";
+
+                    }
+
+                }
+                catch (error) {
+
+                    document.getElementById(
+                        "taskMessage"
+                    ).textContent =
+                        "Unable to connect to server.";
+
+                }
+
+            }
+        );
+
+
+    // ==============================
+    // LOAD ASSIGNED TASKS
+    // ==============================
+
+    async function loadTasks() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://localhost:8080/api/tasks"
+                );
+
+
+            const tasks =
+                await response.json();
+
+
+            const employeeResponse =
+                await fetch(
+                    "http://localhost:8080/api/employees"
+                );
+
+
+            const employees =
+                await employeeResponse.json();
+
+
+            const taskList =
+                document.getElementById(
+                    "taskList"
+                );
+
+
+            taskList.innerHTML = "";
+
+
+            if (tasks.length === 0) {
+
+                taskList.innerHTML =
+                    "<p>No tasks assigned.</p>";
+
+                return;
+
+            }
+
+
+            tasks.forEach(
+                task => {
+
+                    const employee =
+                        employees.find(
+                            emp =>
+                                emp.id ===
+                                task.employeeId
+                        );
+
+
+                    const taskCard =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    taskCard.className =
+                        "card";
+
+
+                    taskCard.style.marginTop =
+                        "15px";
+
+
+                    taskCard.innerHTML = `
+
+                        <h3>
+                            ${task.title}
+                        </h3>
+
+                        <p>
+                            <strong>Description:</strong>
+                            ${task.description}
+                        </p>
+
+                        <p>
+                            <strong>Priority:</strong>
+                            ${task.priority}
+                        </p>
+
+                        <p>
+                            <strong>Deadline:</strong>
+                            ${task.deadline}
+                        </p>
+
+                        <p>
+                            <strong>Assigned To:</strong>
+                            ${
+                                employee
+                                    ? employee.name
+                                    : "Unknown Employee"
+                            }
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+                            ${task.status}
+                        </p>
+
+                    `;
+
+
+                    taskList.appendChild(
+                        taskCard
+                    );
+
+                }
+            );
+
+
+        }
+        catch (error) {
+
+            console.log(
+                "Unable to load tasks"
+            );
+
+        }
+
+    }
+
+
+    // ==============================
+    // LOGOUT
+    // ==============================
+
+    function logout() {
+
+        localStorage.removeItem(
+            "user"
+        );
+
+
+        window.location.href =
+            "index.html";
+
+    }
+
+
+    // ==============================
+    // INITIAL LOAD
+    // ==============================
+
+    loadDashboard();
+
+    loadEmployees();
+
+    loadTasks();
+
+</script>
+
+</body>
+
+</html>

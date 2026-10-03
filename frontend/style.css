@@ -1,0 +1,51 @@
+.dashboard {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.dashboard h1 {
+    margin-bottom: 8px;
+}
+
+.dashboard > p {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.card p {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.progress-box {
+    background: white;
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.progress-box p {
+    font-size: 35px;
+    font-weight: bold;
+    margin-top: 10px;
+}

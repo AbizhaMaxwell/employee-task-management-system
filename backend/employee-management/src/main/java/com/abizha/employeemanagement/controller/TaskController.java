@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/tasks")
 public class TaskController {
 
@@ -61,4 +62,16 @@ public String deleteTask(@PathVariable Long id) {
 
     return "Task not found";
    }
+   @PutMapping("/{id}/status")
+public Task updateTaskStatus(@PathVariable Long id, @RequestParam String status) {
+
+    Task existingTask = taskRepository.findById(id).orElse(null);
+
+    if (existingTask != null) {
+        existingTask.setStatus(status);
+        return taskRepository.save(existingTask);
+    }
+
+    return null;
+}
 }

@@ -2,11 +2,20 @@ package com.abizha.employeemanagement.controller;
 
 import com.abizha.employeemanagement.model.Employee;
 import com.abizha.employeemanagement.repository.EmployeeRepository;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
@@ -32,9 +41,12 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+    public Employee updateEmployee(
+            @PathVariable Long id,
+            @RequestBody Employee employee) {
 
-        Employee existingEmployee = employeeRepository.findById(id).orElse(null);
+        Employee existingEmployee =
+                employeeRepository.findById(id).orElse(null);
 
         if (existingEmployee != null) {
             existingEmployee.setName(employee.getName());
@@ -47,14 +59,15 @@ public class EmployeeController {
 
         return null;
     }
+
     @DeleteMapping("/{id}")
-public String deleteEmployee(@PathVariable Long id) {
+    public String deleteEmployee(@PathVariable Long id) {
 
-    if (employeeRepository.existsById(id)) {
-        employeeRepository.deleteById(id);
-        return "Employee deleted successfully";
+        if (employeeRepository.existsById(id)) {
+            employeeRepository.deleteById(id);
+            return "Employee deleted successfully";
+        }
+
+        return "Employee not found";
     }
-
-    return "Employee not found";
-}
 }

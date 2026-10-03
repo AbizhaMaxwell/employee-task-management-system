@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Employee Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <h1>Employee Dashboard</h1>
+        <button onclick="logout()">
+    Logout
+</button>
+
+        <p id="welcomeMessage">
+            Welcome, Employee
+        </p>
+
+
+        <!-- My Performance -->
+
+        <div class="progress-box">
+
+            <h2>My Performance</h2>
+
+            <p id="completionPercentage">
+                0%
+            </p>
+
+            <p id="taskSummary">
+                Loading...
+            </p>
+
+        </div>
+
+
+        <!-- My Tasks -->
+
+        <h2 style="margin-top: 30px;">
+            My Tasks
+        </h2>
+
+        <div id="taskList">
+            Loading tasks...
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // ==============================
+        // GET LOGGED-IN USER
+        // ==============================
+
+        const user =
+            JSON.parse(
+                localStorage.getItem("user")
+            );
+
+
+        // Check whether user is logged in
+
+        if (!user) {
+
+            window.location.href = "index.html";
+
+        }
+
+
+        // Get employee ID from logged-in user
+
+        const employeeId = user.id;
+
+
+        // Display username
+
+        document.getElementById(
+            "welcomeMessage"
+        ).textContent =
+            "Welcome, " + user.username;
+
+
+        // ==============================
+        // LOAD EMPLOYEE DASHBOARD
+        // ==============================
+
+        async function loadEmployeeDashboard() {
+
+            try {
+
+                // ==============================
+                // LOAD EMPLOYEE TASKS
+                // ==============================
+
+                const taskResponse =
+                    await fetch(
+                        "http://localhost:8080/api/tasks/employee/" +
+                        employeeId
+                    );
+
+                const tasks =
+                    await taskResponse.json();
+
+
+                const taskList =
+                    document.getElementById(
+                        "taskList"
+                    );
+
+                taskList.innerHTML = "";
+
+
+                if (tasks.length === 0) {
+
+                    taskList.innerHTML =
+                        "<p>No tasks assigned.</p>";
+
+                }
+
+
+                tasks.forEach(task => {
+
+                    const taskCard =
+                        document.createElement("div");
+
+
+                    taskCard.className =
+                        "card";
+
+
+                    taskCard.style.marginTop =
+                        "15px";
+
+
+                    taskCard.innerHTML = `
+
+                        <h3>
+                            ${task.title}
+                        </h3>
+
+                        <p>
+                            ${task.description}
+                        </p>
+
+                        <p>
+                            <strong>Priority:</strong>
+                            ${task.priority}
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+                            ${task.status}
+                        </p>
+
+                        <p>
+                            <strong>Deadline:</strong>
+                            ${task.deadline}
+                        </p>
+
+                        ${
+                            task.status !== "Completed"
+
+                            ?
+
+                            `<button
+                                onclick="markCompleted(${task.id})">
+                                Mark as Completed
+                            </button>`
+
+                            :
+
+                            `<p>
+                                <strong>
+                                    ✓ Task Completed
+                                </strong>
+                            </p>`
+                        }
+
+                    `;
+
+
+                    taskList.appendChild(
+                        taskCard
+                    );
+
+                });
+
+
+                // ==============================
+                // LOAD PERFORMANCE
+                // ==============================
+
+                const performanceResponse =
+                    await fetch(
+                        "http://localhost:8080/api/performance/employee/" +
+                        employeeId
+                    );
+
+
+                const performance =
+                    await performanceResponse.json();
+
+
+                document.getElementById(
+                    "completionPercentage"
+                ).textContent =
+                    performance.completionPercentage +
+                    "%";
+
+
+                document.getElementById(
+                    "taskSummary"
+                ).textContent =
+                    "Completed: " +
+                    performance.completedTasks +
+                    " | Pending: " +
+                    performance.pendingTasks;
+
+
+            }
+            catch (error) {
+
+                console.log(
+                    "Unable to load employee dashboard"
+                );
+
+            }
+
+        }
+
+
+        // ==============================
+        // MARK TASK AS COMPLETED
+        // ==============================
+
+        async function markCompleted(taskId) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "http://localhost:8080/api/tasks/" +
+                        taskId +
+                        "/status?status=Completed",
+                        {
+                            method: "PUT"
+                        }
+                    );
+
+
+                if (response.ok) {
+
+                    loadEmployeeDashboard();
+
+                }
+
+            }
+            catch (error) {
+
+                console.log(
+                    "Unable to update task"
+                );
+
+            }
+
+        }
+        function logout() {
+
+    localStorage.removeItem("user");
+
+    window.location.href = "index.html";
+
+}
+
+
+        // ==============================
+        // INITIAL LOAD
+        // ==============================
+
+        loadEmployeeDashboard();
+
+    </script>
+
+</body>
+
+</html>
